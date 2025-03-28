@@ -1,4 +1,18 @@
-﻿@inherits LayoutComponentBase
+﻿@using HCM.Web.Services
+@inherits LayoutComponentBase
+@inject AuthStateService Auth
+
+<div class="top-nav">
+    @if (Auth.IsAuthenticated)
+    {
+        <span>Hello, @Auth.CurrentUser?.FullName</span>
+        <button class="btn btn-sm btn-outline-danger" @onclick="Auth.LogoutAsync">Logout</button>
+    }
+    else
+    {
+        <a href="/login">Login</a>
+    }
+</div>
 
 <div class="page">
     <div class="sidebar">
