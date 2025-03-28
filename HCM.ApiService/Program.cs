@@ -1,6 +1,9 @@
+using HCM.ApiService.Endpoints;
 using HCM.Domain.Models;
+using HCM.Domain.Models.Application.Interfaces;
 using HCM.Infrastructure.Configuration;
 using HCM.Infrastructure.Data;
+using HCM.Infrastructure.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,6 +24,17 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<HcmDbContext>()
     .AddDefaultTokenProviders();
 
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/login"; // for Blazor redirects
+        options.AccessDeniedPath = "/access-denied";
+        options.ExpireTimeSpan = TimeSpan.FromHours(2);
+        options.SlidingExpiration = true;
+    });
+
+builder.Services.AddScoped<IPeopleService, PeopleService>();
+
 // Add services to the container.
 builder.Services.AddProblemDetails();
 
@@ -31,6 +45,8 @@ app.UseExceptionHandler();
 
 
 app.MapDefaultEndpoints();
+app.MapPeopleEndpoints();
+app.MapAuthEndpoints();
 
 using (var scope = app.Services.CreateScope())
 {
